@@ -6,6 +6,20 @@ android {
     namespace 'com.taniniya.webtoapp'
     compileSdk 34
 
+    // Optional: explicit debug keystore for environments without a resolvable user home
+    // (e.g. sandbox builds). CI runners use the standard auto-generated debug keystore.
+    def localKeystore = System.getenv("DEBUG_KEYSTORE")
+    signingConfigs {
+        if (localKeystore != null && file(localKeystore).exists()) {
+            localDebug {
+                storeFile file(localKeystore)
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
+    }
+
     defaultConfig {
         applicationId "com.taniniya.webtoapp"
         minSdk 26
@@ -15,6 +29,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            def localDebug = signingConfigs.findByName('localDebug')
+            if (localDebug != null) {
+                signingConfig localDebug
+            }
+        }
         release {
             minifyEnabled false
         }
