@@ -1,4 +1,4 @@
-package com.taniniya.webtoapp;
+package com.webtoapp.standalone;
 
 import android.net.Uri;
 import android.webkit.WebResourceResponse;
@@ -42,7 +42,6 @@ public final class AdBlocker {
             "media.net",
             "amazon-adsystem.com",
             "bidswitch.net",
-            "bidr.io",
             "adsco.re",
             "yieldmo.com",
             "moatads.com",
@@ -56,6 +55,7 @@ public final class AdBlocker {
             "agkn.com",
             "bluekai.com",
             "demdex.net",
+            "omtrdc.net",
             "omtrdc.net",
             "everesttech.net",
             // ネイティブ広告
@@ -96,7 +96,12 @@ public final class AdBlocker {
     /** URL が広告ドメインなら true。 */
     public static boolean isAd(String url) {
         if (url == null) return false;
-        String host = Uri.parse(url).getHost();
+        String host;
+        try {
+            host = Uri.parse(url).getHost();
+        } catch (Exception e) {
+            return false;
+        }
         if (host == null) return false;
         host = host.toLowerCase(Locale.ROOT);
         for (String ad : AD_DOMAINS) {
