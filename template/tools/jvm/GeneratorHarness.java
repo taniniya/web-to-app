@@ -1,0 +1,109 @@
+import com.taniniya.webtoapp.ApkCore;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * ApkCore をデスクトップ JVM で直接動かすテストハーネス。
+ *
+ * アプリ内の ApkGenerator と同じ ApkCore.build() を通るため、
+ * 「端末で生成される APK と同一のもの」を PC 上で再現して検証できる。
+ *
+ * usage: java -cp <classes>:<apksig.jar> GeneratorHarness \
+ *            <template.apk> <outDir> <debug.keystore> [webDir]
+ */
+public class GeneratorHarness {
+
+    public static void main(String[] args) throws Exception {
+        Path templatePath = Paths.get(args[0]);
+        Path outDir = Paths.get(args[1]);
+        Path keystore = Paths.get(args[2]);
+        Path webDir = args.length > 3 ? Paths.get(args[3]) : null;
+        Files.createDirectories(outDir);
+        byte[] template = Files.readAllBytes(templatePath);
+        System.out.println("template: " + template.length + " bytes");
+
+        // ---------- ケース A: URL モード / minSdk 21 (Android 5.0) ----------
+        ApkCore.Spec a = new ApkCore.Spec();
+        a.templateApk = template;
+        a.url = "https://taniniya.github.io/tanishi-survivor/";
+        a.appName = "タニシ・サバイバー";
+        a.packageName = "com.webtoapp.tanishisurvivor";
+        a.adBlock = false;
+        a.fullscreen = true;
+        a.keepScreenOn = true;
+        a.zoomEnabled = true;
+        a.orientation = "auto";
+        a.minSdk = 21;
+        a.targetSdk = 34;
+        try (InputStream ks = new FileInputStream(keystore.toFile())) {
+            a.keystore = ks;
+            byte[] apk = ApkCore.build(a, step -> System.out.println("  [A] " + step));
+            Files.write(outDir.resolve("url-mode-min21.apk"), apk);
+            System.out.println("A: url-mode-min21.apk -> " + apk.length + " bytes");
+        }
+
+        // ---------- ケース B: ローカル HTML / CSS / JS モード ----------
+        Map<String, byte[]> web = new LinkedHashMap<>();
+        if (webDir != null && Files.isDirectory(webDir)) {
+            Files.walk(webDir).filter(Files::isRegularFile).forEach(p -> {
+                String rel = webDir.relativize(p).toString().replace('\\', '/');
+                try {
+                    web.put(rel, Files.readAllBytes(p));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } else {
+            web.put("index.html", "<html><head><title>テスト</title></head><body>hi</body></html>"
+                    .getBytes(StandardCharsets.UTF_8));
+        }
+
+        ApkCore.Spec b = new ApkCore.Spec();
+        b.templateApk = template;
+        b.appName = "オフライン計算機";
+        b.packageName = "com.webtoapp.offlinecalc";
+        b.adBlock = false;
+        b.fullscreen = true;
+        b.keepScreenOn = true;
+        b.zoomEnabled = false;
+        b.orientation = "portrait";
+        b.minSdk = 26;
+        b.targetSdk = 33;
+        b.webAssets = web;
+        try (InputStream ks = new FileInputStream(keystore.toFile())) {
+            b.keystore = ks;
+            byte[] apk = ApkCore.build(b, step -> System.out.println("  [B] " + step));
+            Files.write(outDir.resolve("local-html-min26.apk"), apk);
+            System.out.println("B: local-html-min26.apk -> " + apk.length + " bytes");
+        }
+
+        // ---------- ケース C: 広告ブロック ON / 横画面 / Android 14 下限 ----------
+        ApkCore.Spec c = new ApkCore.Spec();
+        c.templateApk = template;
+        c.url = "taniniya.github.io/bananahome/";
+        c.appName = "バナナサーバー";
+        c.packageName = "com.webtoapp.banana";
+        c.adBlock = true;
+        c.fullscreen = false;
+        c.keepScreenOn = false;
+        c.zoomEnabled = true;
+        c.orientation = "landscape";
+        c.minSdk = 34;
+        c.targetSdk = 31; // 下限より小さいので 34 に補正されるはず
+        try (InputStream ks = new FileInputStream(keystore.toFile())) {
+            c.keystore = ks;
+            byte[] apk = ApkCore.build(c, step -> System.out.println("  [C] " + step));
+            Files.write(outDir.resolve("edge-min34.apk"), apk);
+            System.out.println("C: edge-min34.apk -> " + apk.length + " bytes");
+        }
+
+        System.out.println("done");
+    }
+}

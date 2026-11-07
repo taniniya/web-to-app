@@ -8,6 +8,9 @@
     <application
         android:label="STANDALONE_TEMPLATE_APP_LABEL"
         android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
@@ -15,7 +18,8 @@
             android:name="com.webtoapp.standalone.MainActivity"
             android:label="STANDALONE_TEMPLATE_APP_LABEL"
             android:exported="true"
-            android:configChanges="orientation|screenSize|keyboardHidden">
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|density|uiMode|navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

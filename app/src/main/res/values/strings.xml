@@ -2,10 +2,76 @@
 <resources>
     <string name="app_name">WebToApp Studio</string>
     <string name="generator_title">🚀 APK ジェネレーター</string>
-    <string name="generator_subtitle">URL と設定を入れるだけで、単独で動く Android アプリ (APK) をその場で生成します</string>
-    <string name="paste">ペースト</string>
+    <string name="generator_subtitle">WebサイトのURL、または手元のHTML / CSS / JS から、単独で動くAndroidアプリ (APK) をその場で生成します</string>
+
+    <!-- モード -->
+    <string name="label_mode">つくるアプリの種類</string>
+    <string name="mode_url">🌐 Webサイト (URL)</string>
+    <string name="mode_file">📁 ローカルファイル</string>
+
+    <!-- URL モード -->
+    <string name="hint_url">Webサイトのアドレス (URL)</string>
+    <string name="hint_url_helper">例: example.com ／ https:// は自動で補います</string>
+    <string name="paste">📋 貼り付け</string>
+    <string name="error_url_required">URLを入力してください</string>
+
+    <!-- ファイルモード -->
+    <string name="pick_files">📁 HTML / CSS / JS / ZIP を選択</string>
+    <string name="no_files_selected">まだファイルが選ばれていません</string>
+    <string name="file_mode_note">index.html を起点に、選んだファイルを全部アプリに同梱します（ZIPは自動で展開）。ネット接続なしで動きます。</string>
+    <string name="error_files_required">HTMLファイルを選んでください</string>
+    <string name="files_selected">✔ %1$dファイル選択中 (%2$s)</string>
+    <string name="files_loading">読み込み中…</string>
+    <string name="files_too_many">ファイルが多すぎます（最大%1$d個まで）</string>
+
+    <!-- アプリ名 / パッケージ名 -->
+    <string name="hint_name">アプリ名</string>
+    <string name="hint_package">パッケージ名（自動入力・変更可）</string>
+    <string name="error_name_required">アプリ名を入力してください</string>
+    <string name="error_package_invalid">パッケージ名は com.example.app の形式で入力してください</string>
+
+    <!-- アイコン -->
     <string name="label_icon">アイコン</string>
     <string name="pick_icon">画像を選択</string>
+
+    <!-- 広告ブロック (Beta) -->
+    <string name="label_adblock">広告ブロック (Beta機能)</string>
+    <string name="adblock_note">※ベータ機能：一部のサイトでデザインが崩れる場合があります（標準ではオフ）</string>
+
+    <!-- 詳細設定 -->
+    <string name="label_advanced">⚙️ 詳細設定（対応Androidバージョン・画面の向きなど）</string>
+    <string name="expand">開く ▼</string>
+    <string name="collapse">閉じる ▲</string>
+    <string name="label_min_sdk">最小対応Androidバージョン (minSdkVersion)</string>
+    <string name="label_target_sdk">ターゲットバージョン (targetSdkVersion)</string>
+    <string name="label_orientation">画面の向き</string>
+    <string name="label_fullscreen">全画面表示（ステータスバーを隠す）</string>
+    <string name="label_keep_screen_on">画面の常時点灯</string>
+    <string name="label_zoom">拡大縮小（ピンチズーム）を許可</string>
+    <string name="advanced_note">※最小対応バージョンを下げると、より古い端末でインストールできます。ターゲットバージョンは新しいほど最新のAndroidの振る舞いになります。</string>
+
+    <string-array name="min_sdk_labels">
+        <item>Android 5.0 (API 21) 推奨・いちばん広く動く</item>
+        <item>Android 7.0 (API 24)</item>
+        <item>Android 8.0 (API 26)</item>
+        <item>Android 10 (API 29)</item>
+        <item>Android 12 (API 31)</item>
+        <item>Android 14 (API 34)</item>
+    </string-array>
+
+    <string-array name="target_sdk_labels">
+        <item>Android 14 (API 34) 最新</item>
+        <item>Android 13 (API 33)</item>
+        <item>Android 12 (API 31)</item>
+    </string-array>
+
+    <string-array name="orientation_labels">
+        <item>自動回転（端末の設定に従う）</item>
+        <item>縦画面に固定</item>
+        <item>横画面に固定</item>
+    </string-array>
+
+    <!-- ビルド -->
     <string name="build_button">🚀 APKをビルドして書き出す</string>
     <string name="build_note">生成したAPKは署名済みです。完了後、そのままインストールできます</string>
     <string name="building">ビルド中…</string>
@@ -16,13 +82,5 @@
     <string name="install_now">今すぐインストール</string>
     <string name="share">共有</string>
     <string name="install_failed">インストーラーを開けませんでした</string>
-    <string name="error_url_required">URLを入力してください</string>
-    <string name="error_name_required">アプリ名を入力してください</string>
-    <string name="error_package_invalid">パッケージ名は com.example.app の形式で入力してください</string>
     <string name="close">閉じる</string>
-    <string name="hint_url">Web URL（例: https://example.com）</string>
-    <string name="hint_name">アプリ名</string>
-    <string name="hint_package">パッケージ名（自動入力・変更可）</string>
-    <string name="label_adblock">広告ブロック（AdBlock）</string>
-    <string name="label_fullscreen">全画面表示</string>
 </resources>

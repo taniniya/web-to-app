@@ -1,6 +1,9 @@
 {
   "url": "https://example.com/",
   "appName": "WebToApp",
-  "adBlock": true,
-  "fullscreen": true
+  "adBlock": false,
+  "fullscreen": true,
+  "keepScreenOn": true,
+  "zoomEnabled": true,
+  "orientation": "auto"
 }
