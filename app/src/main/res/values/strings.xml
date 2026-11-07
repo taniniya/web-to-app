@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WebToApp Studio</string>
+    <string name="app_name">WebAppStudio</string>
     <string name="generator_title">web to apk</string>
     <string name="generator_subtitle">WebサイトのURL、またはHTML / CSS / JS ファイルからAndroidアプリをその場で生成します</string>
 
