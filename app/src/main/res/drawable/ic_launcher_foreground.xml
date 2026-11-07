@@ -4,16 +4,74 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Card Background (Matte Dark Charcoal) -->
     <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M30,30h48v40h-48z" />
+        android:fillColor="#FF1C1C1E"
+        android:strokeColor="#FFF5F5F8"
+        android:strokeWidth="1.8"
+        android:pathData="M35,24.5 L73,24.5 A10.5,10.5 0 0,1 83.5,35 L83.5,73 A10.5,10.5 0 0,1 73,83.5 L35,83.5 A10.5,10.5 0 0,1 24.5,73 L24.5,35 A10.5,10.5 0 0,1 35,24.5 Z" />
+
+    <!-- Header Divider Line -->
     <path
-        android:fillColor="#FF3F51B5"
-        android:pathData="M30,30h48v8h-48z" />
+        android:strokeColor="#FFF5F5F8"
+        android:strokeWidth="1.3"
+        android:pathData="M24.5,37.5 L83.5,37.5" />
+
+    <!-- 3 Window Dots (Crisp White) -->
     <path
-        android:fillColor="#FF3F51B5"
-        android:pathData="M34,44h28v4h-28zM34,52h40v4h-40zM34,60h20v4h-20z" />
+        android:fillColor="#FFF5F5F8"
+        android:pathData="M31,31 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
     <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M46,66l8,10l8,-10z" />
+        android:fillColor="#FFF5F5F8"
+        android:pathData="M36,31 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
+    <path
+        android:fillColor="#FFF5F5F8"
+        android:pathData="M41,31 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
+
+    <!-- Mini Address Bar in Header -->
+    <path
+        android:fillColor="#FF2C2C30"
+        android:pathData="M47,28.5 L78,28.5 A2.5,2.5 0 0,1 80.5,31 L80.5,31 A2.5,2.5 0 0,1 78,33.5 L47,33.5 A2.5,2.5 0 0,1 44.5,31 L44.5,31 A2.5,2.5 0 0,1 47,28.5 Z" />
+
+    <!-- Android Head Dome (Crisp White) -->
+    <path
+        android:fillColor="#FFF5F5F8"
+        android:pathData="M40,59 A14,14 0 0,1 68,59 Z" />
+
+    <!-- Antennas -->
+    <path
+        android:strokeColor="#FFF5F5F8"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:pathData="M46,45 L42,39 M62,45 L66,39" />
+
+    <!-- Eyes (Matte Dark) -->
+    <path
+        android:fillColor="#FF1C1C1E"
+        android:pathData="M47,53 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
+    <path
+        android:fillColor="#FF1C1C1E"
+        android:pathData="M61,53 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
+
+    <!-- Code Brackets: < and > -->
+    <path
+        android:strokeColor="#FFF5F5F8"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M32,52 L28,55.5 L32,59" />
+    <path
+        android:strokeColor="#FFF5F5F8"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M76,52 L80,55.5 L76,59" />
+
+    <!-- Subtle Baseline Under Android -->
+    <path
+        android:strokeColor="#FF666670"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:pathData="M44,65 L64,65" />
 </vector>
