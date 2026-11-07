@@ -6,9 +6,14 @@ android {
     namespace 'com.taniniya.webtoapp'
     compileSdk 34
 
-    // Optional: explicit debug keystore for environments without a resolvable user home
-    // (e.g. sandbox builds). CI runners use the standard auto-generated debug keystore.
+    // Debug signing: use DEBUG_KEYSTORE when set, otherwise always sign with the
+    // keystore bundled at src/main/assets/debug.keystore so that every build (local
+    // and CI) keeps the same signing identity and can update an installed copy.
     def localKeystore = System.getenv("DEBUG_KEYSTORE")
+    if (localKeystore == null || !file(localKeystore).exists()) {
+        def bundled = file("src/main/assets/debug.keystore")
+        if (bundled.exists()) localKeystore = bundled.path
+    }
     signingConfigs {
         if (localKeystore != null && file(localKeystore).exists()) {
             localDebug {
