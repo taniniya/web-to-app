@@ -247,8 +247,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Map<String, byte[]> assets = WebAssets.stripCommonRoot(collected);
+            String firstHtml = null;
+            for (String key : assets.keySet()) {
+                if (WebAssets.isHtml(key)) { firstHtml = key; break; }
+            }
             String indexName = WebAssets.ensureIndex(assets);
-            String titleGuess = indexName == null ? "" : WebAssets.suggestAppNameFromHtml(assets.get(indexName));
+            String guess = indexName == null ? "" : WebAssets.suggestAppNameFromHtml(assets.get(indexName));
+            if (guess.isEmpty() && firstHtml != null) {
+                guess = WebAssets.suggestAppNameFromFileName(firstHtml);
+            }
+            final String titleGuess = guess;
             String summary = WebAssets.summarize(assets);
             final String err = error;
             final int count = assets.size();

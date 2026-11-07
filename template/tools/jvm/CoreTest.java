@@ -52,6 +52,13 @@ public class CoreTest {
         check("title なし", "".equals(WebAssets.suggestAppNameFromHtml("<html></html>"
                 .getBytes(StandardCharsets.UTF_8))));
 
+        // --- ファイル名からのアプリ名推測 ---
+        check("ファイル名 game.html", "Game".equals(WebAssets.suggestAppNameFromFileName("game.html")));
+        check("ファイル名 my_page.html", "My page".equals(
+                WebAssets.suggestAppNameFromFileName("my_page.html")));
+        check("ファイル名 index は推測しない", "".equals(
+                WebAssets.suggestAppNameFromFileName("index.html")));
+
         // --- URL からのアプリ名推測 ---
         check("example.com", "Example".equals(WebAssets.suggestAppNameFromUrl("example.com")));
         check("www 除去", "Taniniya".equals(

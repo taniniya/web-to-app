@@ -131,6 +131,20 @@ public final class WebAssets {
         return "";
     }
 
+    /** ファイル名からアプリ名を推測する (game.html → Game)。index は推測しない。 */
+    public static String suggestAppNameFromFileName(String name) {
+        if (name == null) return "";
+        String base = name;
+        int slash = base.lastIndexOf('/');
+        if (slash >= 0) base = base.substring(slash + 1);
+        int dot = base.lastIndexOf('.');
+        if (dot > 0) base = base.substring(0, dot);
+        base = base.replace('_', ' ').replace('-', ' ').trim();
+        if (base.isEmpty() || base.equalsIgnoreCase("index")) return "";
+        if (base.length() > 40) base = base.substring(0, 40).trim();
+        return Character.toUpperCase(base.charAt(0)) + base.substring(1);
+    }
+
     /** URL のホスト名からアプリ名を推測する (https://www.example.com → Example)。 */
     public static String suggestAppNameFromUrl(String raw) {
         if (raw == null) return "";
