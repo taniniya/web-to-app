@@ -27,14 +27,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * APK 生成の中核 (v2.1)。Android API に一切依存しない Pure Java 実装。
+ * APK 生成の中核 (v2.2)。Android API に一切依存しない Pure Java 実装。
  *
  * 入力: テンプレート APK (単独動作する WebView アプリ)
  * 処理:
  *   1. AndroidManifest.xml (AXML) の StringPool 書換 … パッケージ名 / アプリ名
  *   2. AndroidManifest.xml の &lt;uses-sdk&gt; 属性値書換 … minSdkVersion / targetSdkVersion
  *   3. アイコン PNG 差し替え (mdpi〜xxxhdpi)
- *   4. assets/app_config.json 注入 (URL / 全画面 / 常時点灯 / ズーム / 向き / 広告ブロック)
+ *   4. assets/app_config.json 注入 (URL / 全画面 / 常時点灯 / ズーム / 向き / 広告ブロック /
+ *      引っ張って更新 / 進捗バー / PC 表示 / ダークモード)
  *   5. assets/web/** 注入 (HTML / CSS / JS を完全オフラインで同梱)
  *   6. アライメント維持つき ZIP 再構築 (ApkWriter)
  *   7. apksig による v1 + v2 + v3 署名
@@ -66,10 +67,20 @@ public final class ApkCore {
         /** 広告ブロック (Beta / 既定 OFF) */
         public boolean adBlock = false;
         public boolean fullscreen = true;
-        public boolean keepScreenOn = true;
+        /** 画面の常時点灯 (v2.2 から既定 OFF) */
+        public boolean keepScreenOn = false;
         public boolean zoomEnabled = true;
         /** auto | portrait | landscape */
         public String orientation = "auto";
+
+        /** 引っ張って更新 (既定 ON) */
+        public boolean pullToRefresh = true;
+        /** ページ読み込み進捗バー (既定 ON) */
+        public boolean progressBar = true;
+        /** PC 版 User-Agent で表示 (既定 OFF) */
+        public boolean desktopMode = false;
+        /** auto | on | off */
+        public String darkMode = "auto";
 
         public int minSdk = 21;
         public int targetSdk = 34;
@@ -197,6 +208,13 @@ public final class ApkCore {
         sb.append("\"fullscreen\":").append(spec.fullscreen).append(',');
         sb.append("\"keepScreenOn\":").append(spec.keepScreenOn).append(',');
         sb.append("\"zoomEnabled\":").append(spec.zoomEnabled).append(',');
+        sb.append("\"pullToRefresh\":").append(spec.pullToRefresh).append(',');
+        sb.append("\"progressBar\":").append(spec.progressBar).append(',');
+        sb.append("\"desktopMode\":").append(spec.desktopMode).append(',');
+        String dm = spec.darkMode == null ? "auto" : spec.darkMode.toLowerCase(Locale.ROOT);
+        if (!dm.equals("on") && !dm.equals("off")) dm = "auto";
+        jsonPair(sb, "darkMode", dm);
+        sb.append(',');
         String o = spec.orientation == null ? "auto" : spec.orientation.toLowerCase(Locale.ROOT);
         if (!o.equals("portrait") && !o.equals("landscape")) o = "auto";
         jsonPair(sb, "orientation", o);

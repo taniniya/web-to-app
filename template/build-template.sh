@@ -24,6 +24,7 @@ mkdir -p "$OUT/classes" "$OUT/dex"
 echo "[1/4] javac"
 "$JAVA_HOME/bin/javac" -source 8 -target 8 -classpath "$PLATFORM" -d "$OUT/classes" \
   "$SRC/com/webtoapp/standalone/MainActivity.java" \
+  "$SRC/com/webtoapp/standalone/PullToRefreshLayout.java" \
   "$SRC/com/webtoapp/standalone/AdBlocker.java"
 
 echo "[2/4] d8 (--min-api $MIN_API)"
@@ -39,7 +40,7 @@ echo "[3/4] aapt2 compile + link"
   --min-sdk-version "$MIN_API" \
   --target-sdk-version "$TARGET_API" \
   --version-code 1 \
-  --version-name 2.1 \
+  --version-name 1.0 \
   --auto-add-overlay \
   "$OUT/res.zip"
 

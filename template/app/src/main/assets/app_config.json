@@ -3,7 +3,11 @@
   "appName": "WebToApp",
   "adBlock": false,
   "fullscreen": true,
-  "keepScreenOn": true,
+  "keepScreenOn": false,
   "zoomEnabled": true,
-  "orientation": "auto"
+  "orientation": "auto",
+  "pullToRefresh": true,
+  "progressBar": true,
+  "desktopMode": false,
+  "darkMode": "auto"
 }

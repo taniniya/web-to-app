@@ -90,6 +90,20 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:text="@string/paste" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/sw_offline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/label_offline" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/offline_note"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <!-- ============ ローカルファイルモード ============ -->
@@ -245,6 +259,38 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/label_output"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_apk_dir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/hint_apk_dir"
+                app:helperText="@string/apk_dir_helper">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_apk_dir"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/apk_dir_note"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/label_min_sdk"
                 android:textSize="13sp" />
 
@@ -296,6 +342,45 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/label_zoom" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/label_display"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/sw_pull_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_pull_refresh" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/sw_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_progress_bar" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/sw_desktop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_desktop_mode" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/label_dark_mode"
+                android:textSize="13sp" />
+
+            <Spinner
+                android:id="@+id/sp_dark_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp" />
 
             <TextView
                 android:layout_width="match_parent"

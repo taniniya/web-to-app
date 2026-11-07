@@ -165,6 +165,37 @@ public final class WebAssets {
         }
     }
 
+    /**
+     * APK 保存先フォルダ名 (Download からの相対パス) を安全な形に整える (v2.2)。
+     *
+     *   "WebToApp"       → "WebToApp"
+     *   "/MyApps/"       → "MyApps"
+     *   ""               → ""        (= Download/ 直下)
+     *   "../etc"         → "etc"     (上位ディレクトリは無視)
+     *   "My Apps: 2026"  → "My Apps_ 2026"
+     *
+     * 空文字 (= 直下) も有効な指定として扱う。
+     */
+    public static String normalizeFolder(String raw) {
+        if (raw == null) return "";
+        String p = raw.replace('\\', '/').trim();
+        StringBuilder sb = new StringBuilder();
+        int segments = 0;
+        for (String seg : p.split("/")) {
+            String s = seg.trim();
+            if (s.isEmpty() || s.equals(".") || s.equals("..")) continue;
+            s = s.replaceAll("[\\\\:*?\"<>|\\p{Cntrl}]", "_");
+            if (s.isEmpty()) continue;
+            if (sb.length() > 0) sb.append('/');
+            sb.append(s);
+            segments++;
+            if (segments >= 3) break;
+        }
+        String out = sb.toString();
+        if (out.length() > 60) out = out.substring(0, 60);
+        return out;
+    }
+
     /** アプリ名からパッケージ名の末尾セグメントを作る。 */
     public static String toPackageSegment(String name) {
         StringBuilder sb = new StringBuilder();

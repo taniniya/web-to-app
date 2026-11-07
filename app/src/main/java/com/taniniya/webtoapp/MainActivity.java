@@ -36,7 +36,14 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * WebToApp Studio v2.1 — ジェネレーター本体。
+ * WebToApp Studio v2.2 — ジェネレーター本体。
+ *
+ * v2.2 の変更点:
+ *  - URL モードに「Webサイトをダウンロードしてオフライン化」(注意書きつき)
+ *  - 詳細設定に「APK の保存先フォルダ」を追加 (既定 WebToApp / 空欄で Download 直下)
+ *  - 画面の常時点灯を標準 OFF に変更
+ *  - 便利機能: 引っ張って更新 / 読み込み進捗バー / デスクトップ表示 / ダークモード
+ *  - 設定を次回起動に引き継ぐ (SharedPreferences)
  *
  * v2.1 の変更点:
  *  - 「🌐 Webサイト (URL)」と「📁 ローカルファイル (HTML / CSS / JS / ZIP)」のモード切り替え
@@ -49,10 +56,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int[] MIN_SDK_VALUES = {21, 24, 26, 29, 31, 34};
     private static final int[] TARGET_SDK_VALUES = {34, 33, 31};
     private static final String[] ORIENTATION_VALUES = {"auto", "portrait", "landscape"};
+    /** ダークモード (sp_dark_mode の並びと同じ) */
+    private static final String[] DARK_MODE_VALUES = {"auto", "on", "off"};
 
-    private TextInputEditText etUrl, etName, etPackage;
+    private static final String PREFS = "webtoapp_settings";
+
+    private TextInputEditText etUrl, etName, etPackage, etApkDir;
     private MaterialSwitch swAdblock, swFullscreen, swKeepScreenOn, swZoom;
-    private Spinner spMinSdk, spTargetSdk, spOrientation;
+    private MaterialSwitch swOffline, swPullRefresh, swProgress, swDesktop;
+    private Spinner spMinSdk, spTargetSdk, spOrientation, spDarkMode;
     private TextView tvFiles, tvAdvancedArrow;
     private View groupUrl, groupFile, groupAdvanced;
     private ImageView iconPreview;
@@ -92,13 +104,19 @@ public class MainActivity extends AppCompatActivity {
         etUrl = findViewById(R.id.et_url);
         etName = findViewById(R.id.et_name);
         etPackage = findViewById(R.id.et_package);
+        etApkDir = findViewById(R.id.et_apk_dir);
         swAdblock = findViewById(R.id.sw_adblock);
         swFullscreen = findViewById(R.id.sw_fullscreen);
         swKeepScreenOn = findViewById(R.id.sw_keep_screen_on);
         swZoom = findViewById(R.id.sw_zoom);
+        swOffline = findViewById(R.id.sw_offline);
+        swPullRefresh = findViewById(R.id.sw_pull_refresh);
+        swProgress = findViewById(R.id.sw_progress);
+        swDesktop = findViewById(R.id.sw_desktop);
         spMinSdk = findViewById(R.id.sp_min_sdk);
         spTargetSdk = findViewById(R.id.sp_target_sdk);
         spOrientation = findViewById(R.id.sp_orientation);
+        spDarkMode = findViewById(R.id.sp_dark_mode);
         tvFiles = findViewById(R.id.tv_files);
         tvAdvancedArrow = findViewById(R.id.tv_advanced_arrow);
         groupUrl = findViewById(R.id.group_url);
@@ -108,13 +126,19 @@ public class MainActivity extends AppCompatActivity {
         btnBuild = findViewById(R.id.btn_build);
         tgMode = findViewById(R.id.tg_mode);
 
-        // ---- 初期値: 広告ブロックは標準オフ (Beta) ----
+        // ---- 初期値 (v2.2): 常時点灯は標準OFF。便利機能は標準ON ----
         swAdblock.setChecked(false);
         swFullscreen.setChecked(true);
-        swKeepScreenOn.setChecked(true);
+        swKeepScreenOn.setChecked(false);
         swZoom.setChecked(true);
+        swOffline.setChecked(false);
+        swPullRefresh.setChecked(true);
+        swProgress.setChecked(true);
+        swDesktop.setChecked(false);
+        etApkDir.setText(getString(R.string.default_apk_dir));
 
         setupSpinners();
+        loadSettings();
 
         tgMode.check(R.id.btn_mode_url);
         tgMode.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
@@ -174,6 +198,55 @@ public class MainActivity extends AppCompatActivity {
         setSpinner(spMinSdk, R.array.min_sdk_labels, 0);
         setSpinner(spTargetSdk, R.array.target_sdk_labels, 0);
         setSpinner(spOrientation, R.array.orientation_labels, 0);
+        setSpinner(spDarkMode, R.array.dark_mode_labels, 0);
+    }
+
+    // ======================================================================
+    // 設定の保存 / 復元 (次に開いたときも同じ設定で使えるようにする)
+    // ======================================================================
+
+    private void loadSettings() {
+        try {
+            android.content.SharedPreferences p = getSharedPreferences(PREFS, MODE_PRIVATE);
+            if (!p.contains("apkDir")) return;
+            etApkDir.setText(p.getString("apkDir", getString(R.string.default_apk_dir)));
+            swKeepScreenOn.setChecked(p.getBoolean("keepScreenOn", false));
+            swFullscreen.setChecked(p.getBoolean("fullscreen", true));
+            swZoom.setChecked(p.getBoolean("zoom", true));
+            swAdblock.setChecked(p.getBoolean("adblock", false));
+            swPullRefresh.setChecked(p.getBoolean("pullRefresh", true));
+            swProgress.setChecked(p.getBoolean("progress", true));
+            swDesktop.setChecked(p.getBoolean("desktop", false));
+            swOffline.setChecked(p.getBoolean("offline", false));
+            spDarkMode.setSelection(Math.max(0, Math.min(DARK_MODE_VALUES.length - 1,
+                    p.getInt("darkMode", 0))), false);
+            spMinSdk.setSelection(Math.max(0, Math.min(MIN_SDK_VALUES.length - 1,
+                    p.getInt("minSdk", 0))), false);
+            spTargetSdk.setSelection(Math.max(0, Math.min(TARGET_SDK_VALUES.length - 1,
+                    p.getInt("targetSdk", 0))), false);
+            spOrientation.setSelection(Math.max(0, Math.min(ORIENTATION_VALUES.length - 1,
+                    p.getInt("orientation", 0))), false);
+        } catch (Throwable ignored) {}
+    }
+
+    private void saveSettings() {
+        try {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                    .putString("apkDir", textOf(etApkDir))
+                    .putBoolean("keepScreenOn", swKeepScreenOn.isChecked())
+                    .putBoolean("fullscreen", swFullscreen.isChecked())
+                    .putBoolean("zoom", swZoom.isChecked())
+                    .putBoolean("adblock", swAdblock.isChecked())
+                    .putBoolean("pullRefresh", swPullRefresh.isChecked())
+                    .putBoolean("progress", swProgress.isChecked())
+                    .putBoolean("desktop", swDesktop.isChecked())
+                    .putBoolean("offline", swOffline.isChecked())
+                    .putInt("darkMode", spDarkMode.getSelectedItemPosition())
+                    .putInt("minSdk", spMinSdk.getSelectedItemPosition())
+                    .putInt("targetSdk", spTargetSdk.getSelectedItemPosition())
+                    .putInt("orientation", spOrientation.getSelectedItemPosition())
+                    .apply();
+        } catch (Throwable ignored) {}
     }
 
     private void setSpinner(Spinner sp, int labelsRes, int selected) {
@@ -339,6 +412,12 @@ public class MainActivity extends AppCompatActivity {
         req.fullscreen = swFullscreen.isChecked();
         req.keepScreenOn = swKeepScreenOn.isChecked();
         req.zoomEnabled = swZoom.isChecked();
+        req.pullToRefresh = swPullRefresh.isChecked();
+        req.progressBar = swProgress.isChecked();
+        req.desktopMode = swDesktop.isChecked();
+        req.darkMode = DARK_MODE_VALUES[Math.max(0, Math.min(DARK_MODE_VALUES.length - 1,
+                spDarkMode.getSelectedItemPosition()))];
+        req.saveFolder = WebAssets.normalizeFolder(textOf(etApkDir));
         req.minSdk = MIN_SDK_VALUES[Math.max(0, spMinSdk.getSelectedItemPosition())];
         req.targetSdk = TARGET_SDK_VALUES[Math.max(0, spTargetSdk.getSelectedItemPosition())];
         req.orientation = ORIENTATION_VALUES[Math.max(0, spOrientation.getSelectedItemPosition())];
@@ -346,9 +425,7 @@ public class MainActivity extends AppCompatActivity {
         if (urlMode) {
             String url = textOf(etUrl);
             if (url.isEmpty()) { etUrl.setError(getString(R.string.error_url_required)); return; }
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "https://" + url;
-            }
+            url = SiteDownloader.normalizeUrl(url);
             req.url = url;
         } else {
             if (localAssets == null || localAssets.isEmpty()) {
@@ -364,7 +441,61 @@ public class MainActivity extends AppCompatActivity {
             permissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
+        saveSettings();
+
+        // URL モード + オフライン化: 先にサイトを取得してからビルドする
+        if (urlMode && swOffline.isChecked()) {
+            startOfflineDownload(req);
+            return;
+        }
+
         build(req);
+    }
+
+    // ======================================================================
+    // URL モード: サイトをダウンロードしてオフライン化 (v2.2)
+    // ======================================================================
+
+    private void startOfflineDownload(ApkGenerator.Request req) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_progress, null);
+        TextView tvStep = dialogView.findViewById(R.id.tv_step);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.offline_downloading)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+        dialog.show();
+
+        final String url = req.url;
+        new Thread(() -> {
+            try {
+                SiteDownloader.Result res = SiteDownloader.download(url,
+                        step -> runOnUiThread(() -> tvStep.setText(step)));
+                runOnUiThread(() -> {
+                    dialog.dismiss();
+                    req.localAssets = res.assets;
+                    // ページのタイトルをアプリ名に使う (手で編集していない場合だけ)
+                    if (!nameEdited && res.title != null && !res.title.isEmpty()) {
+                        setAppName(res.title);
+                        req.appName = textOf(etName);
+                        req.packageName = textOf(etPackage);
+                    }
+                    Toast.makeText(this, getString(R.string.offline_done,
+                            SiteDownloader.summarize(res)), Toast.LENGTH_LONG).show();
+                    build(req);
+                });
+            } catch (Throwable e) {
+                runOnUiThread(() -> {
+                    dialog.dismiss();
+                    String detail = e.getMessage() == null ? String.valueOf(e) : e.getMessage();
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.offline_failed)
+                            .setMessage(getString(R.string.offline_failed_hint) + "\n\n" + detail)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+                });
+            }
+        }, "site-download").start();
     }
 
     private void build(ApkGenerator.Request req) {

@@ -36,10 +36,26 @@ public final class ApkGenerator {
         /** 広告ブロック (Beta / 既定 OFF) */
         public boolean adBlock = false;
         public boolean fullscreen = true;
-        public boolean keepScreenOn = true;
+        /** 画面の常時点灯 (v2.2 から既定 OFF) */
+        public boolean keepScreenOn = false;
         public boolean zoomEnabled = true;
         /** auto | portrait | landscape */
         public String orientation = "auto";
+
+        /** 引っ張って更新 (既定 ON) */
+        public boolean pullToRefresh = true;
+        /** ページ読み込み進捗バー (既定 ON) */
+        public boolean progressBar = true;
+        /** PC 版 User-Agent 表示 (既定 OFF) */
+        public boolean desktopMode = false;
+        /** auto | on | off */
+        public String darkMode = "auto";
+
+        /**
+         * APK の保存先フォルダ (Download からの相対パス)。
+         * 既定 "WebToApp" (= Download/WebToApp/)。空文字なら Download/ 直下。
+         */
+        public String saveFolder = "WebToApp";
 
         public int minSdk = 21;
         public int targetSdk = 34;
@@ -75,6 +91,10 @@ public final class ApkGenerator {
         spec.fullscreen = req.fullscreen;
         spec.keepScreenOn = req.keepScreenOn;
         spec.zoomEnabled = req.zoomEnabled;
+        spec.pullToRefresh = req.pullToRefresh;
+        spec.progressBar = req.progressBar;
+        spec.desktopMode = req.desktopMode;
+        spec.darkMode = req.darkMode;
         spec.orientation = req.orientation;
         spec.minSdk = req.minSdk;
         spec.targetSdk = req.targetSdk;
@@ -119,7 +139,8 @@ public final class ApkGenerator {
         Result r = new Result();
         r.apkFile = outFile;
         r.sizeBytes = outFile.length();
-        r.downloadsFile = saveToDownloads(ctx, outFile, safeName);
+        r.downloadsFile = saveToDownloads(ctx, outFile, safeName,
+                WebAssets.normalizeFolder(req.saveFolder));
         return r;
     }
 
@@ -170,15 +191,21 @@ public final class ApkGenerator {
     // 保存
     // ======================================================================
 
-    private static File saveToDownloads(Context ctx, File apk, String appName) {
+    /**
+     * 生成した APK を Download 配下の指定フォルダへ保存する (ベストエフォート)。
+     * folder は {@link WebAssets#normalizeFolder(String)} で正規化済みの相対パス。
+     */
+    private static File saveToDownloads(Context ctx, File apk, String appName, String folder) {
         try {
+            String sub = folder == null ? "" : folder;
+            String relative = android.os.Environment.DIRECTORY_DOWNLOADS
+                    + (sub.isEmpty() ? "" : "/" + sub);
             if (android.os.Build.VERSION.SDK_INT >= 29) {
                 android.content.ContentValues values = new android.content.ContentValues();
                 values.put(android.provider.MediaStore.Downloads.DISPLAY_NAME, appName + ".apk");
                 values.put(android.provider.MediaStore.Downloads.MIME_TYPE,
                         "application/vnd.android.package-archive");
-                values.put(android.provider.MediaStore.Downloads.RELATIVE_PATH,
-                        android.os.Environment.DIRECTORY_DOWNLOADS + "/WebToApp");
+                values.put(android.provider.MediaStore.Downloads.RELATIVE_PATH, relative);
                 android.net.Uri uri = ctx.getContentResolver().insert(
                         android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
                 if (uri == null) return null;
@@ -188,11 +215,12 @@ public final class ApkGenerator {
                     int n;
                     while ((n = in.read(buf)) > 0) os.write(buf, 0, n);
                 }
-                return new File(android.os.Environment.getExternalStoragePublicDirectory(
-                        android.os.Environment.DIRECTORY_DOWNLOADS), "WebToApp/" + appName + ".apk");
+                File dir = new File(android.os.Environment.getExternalStoragePublicDirectory(
+                        android.os.Environment.DIRECTORY_DOWNLOADS), sub);
+                return new File(dir, appName + ".apk");
             } else {
                 File dir = new File(android.os.Environment.getExternalStoragePublicDirectory(
-                        android.os.Environment.DIRECTORY_DOWNLOADS), "WebToApp");
+                        android.os.Environment.DIRECTORY_DOWNLOADS), sub);
                 if (!dir.exists()) dir.mkdirs();
                 File dst = new File(dir, appName + ".apk");
                 copy(apk, dst);

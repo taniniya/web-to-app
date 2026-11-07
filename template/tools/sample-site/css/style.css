@@ -1,0 +1,7 @@
+@import "more.css";
+
+body { font-family: sans-serif; color: #222; margin: 0; }
+
+.hero { background: url("../img/bg.png") no-repeat; }
+
+.data { background: url("data:image/png;base64,iVBORw0KGgo="); }

@@ -14,6 +14,12 @@
     <string name="hint_url_helper">例: example.com ／ https:// は自動で補います</string>
     <string name="paste">📋</string>
     <string name="error_url_required">URLを入力してください</string>
+    <string name="label_offline">Webサイトをダウンロードしてオフライン化</string>
+    <string name="offline_note">※正常に動作しない場合があります（外部APIやログインが必要なページなど）</string>
+    <string name="offline_downloading">サイトをダウンロード中…</string>
+    <string name="offline_done">オフライン化: %1$s</string>
+    <string name="offline_failed">サイトをダウンロードできませんでした</string>
+    <string name="offline_failed_hint">URLとネット接続を確認してください。ログインが必要なページはオフライン化できません。</string>
 
     <!-- ファイルモード -->
     <string name="pick_files">HTML / CSS / JS / ZIP を選択</string>
@@ -48,6 +54,23 @@
     <string name="label_fullscreen">全画面表示（ステータスバーを隠す）</string>
     <string name="label_keep_screen_on">画面の常時点灯</string>
     <string name="label_zoom">拡大縮小（ピンチズーム）を許可</string>
+    <string name="label_display">画面表示</string>
+    <string name="label_pull_refresh">引っ張って更新（Pull to Refresh）</string>
+    <string name="label_progress_bar">ページ読み込みの進捗バーを表示</string>
+    <string name="label_desktop_mode">デスクトップ表示（PCモード）</string>
+    <string name="label_dark_mode">ダークモード</string>
+    <string name="label_output">APKの保存先</string>
+    <string name="hint_apk_dir">保存先フォルダ名</string>
+    <string name="default_apk_dir">WebToApp</string>
+    <string name="apk_dir_helper">Download 内のフォルダ名。空欄なら Download 直下に保存します</string>
+    <string name="apk_dir_note">※「MyApps」のように書くと Download/MyApps/ に保存します。「/」で区切って2階層まで指定できます。</string>
+
+    <string-array name="dark_mode_labels">
+        <item>自動（端末の設定に従う）</item>
+        <item>常にダーク</item>
+        <item>常にライト</item>
+    </string-array>
+
     <string name="advanced_note">※最小対応バージョンを下げると、より古い端末でインストールできます。ターゲットバージョンは新しいほど最新のAndroidの振る舞いになります。</string>
 
     <string-array name="min_sdk_labels">

@@ -28,6 +28,7 @@ public class GeneratorHarness {
         Files.createDirectories(outDir);
         byte[] template = Files.readAllBytes(templatePath);
         System.out.println("template: " + template.length + " bytes");
+        Path offlineSite = args.length > 4 ? Paths.get(args[4]) : null;
 
         // ---------- ケース A: URL モード / minSdk 21 (Android 5.0) ----------
         ApkCore.Spec a = new ApkCore.Spec();
@@ -37,7 +38,11 @@ public class GeneratorHarness {
         a.packageName = "com.webtoapp.tanishisurvivor";
         a.adBlock = false;
         a.fullscreen = true;
-        a.keepScreenOn = true;
+        a.keepScreenOn = false;   // v2.2: 常時点灯は既定 OFF
+        a.pullToRefresh = true;
+        a.progressBar = true;
+        a.desktopMode = false;
+        a.darkMode = "auto";
         a.zoomEnabled = true;
         a.orientation = "auto";
         a.minSdk = 21;
@@ -95,6 +100,10 @@ public class GeneratorHarness {
         c.keepScreenOn = false;
         c.zoomEnabled = true;
         c.orientation = "landscape";
+        c.pullToRefresh = false;
+        c.progressBar = false;
+        c.desktopMode = true;
+        c.darkMode = "on";
         c.minSdk = 34;
         c.targetSdk = 31; // 下限より小さいので 34 に補正されるはず
         try (InputStream ks = new FileInputStream(keystore.toFile())) {
@@ -131,6 +140,7 @@ public class GeneratorHarness {
         d.appName = "アイコン付き";
         d.packageName = "com.webtoapp.withicon";
         d.icons = icons;
+        d.keepScreenOn = false;
         d.minSdk = 21;
         d.targetSdk = 34;
         try (InputStream ks = new FileInputStream(keystore.toFile())) {
@@ -140,6 +150,46 @@ public class GeneratorHarness {
             System.out.println("D: icon.apk -> " + apk.length + " bytes");
         }
 
+        // ---------- ケース E: URL からダウンロードしたサイトのオフライン APK ----------
+        if (offlineSite != null && Files.isDirectory(offlineSite)) {
+            caseOfflineSite(template, keystore, outDir, offlineSite);
+        }
+
         System.out.println("done");
+    }
+
+    /** URL からダウンロードしたサイト (SiteDownloader の出力) をオフライン APK にする。 */
+    private static void caseOfflineSite(byte[] template, Path keystore, Path outDir, Path siteDir)
+            throws Exception {
+        Map<String, byte[]> assets = new LinkedHashMap<>();
+        Files.walk(siteDir).filter(Files::isRegularFile).forEach(p -> {
+            String rel = siteDir.relativize(p).toString().replace('\\', '/');
+            try {
+                assets.put(rel, Files.readAllBytes(p));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        System.out.println("offline site assets: " + assets.size() + " files");
+
+        ApkCore.Spec e = new ApkCore.Spec();
+        e.templateApk = template;
+        e.appName = "オフラインサイト";
+        e.packageName = "com.webtoapp.offlinesite";
+        e.webAssets = assets;
+        e.keepScreenOn = false;      // v2.2 の既定
+        e.pullToRefresh = true;
+        e.progressBar = false;
+        e.desktopMode = true;
+        e.darkMode = "on";
+        e.orientation = "auto";
+        e.minSdk = 21;
+        e.targetSdk = 34;
+        try (InputStream ks = new FileInputStream(keystore.toFile())) {
+            e.keystore = ks;
+            byte[] apk = ApkCore.build(e, step -> System.out.println("  [E] " + step));
+            Files.write(outDir.resolve("offline-site.apk"), apk);
+            System.out.println("E: offline-site.apk -> " + apk.length + " bytes");
+        }
     }
 }

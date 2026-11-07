@@ -1,3 +1,4 @@
+import com.taniniya.webtoapp.SiteDownloader;
 import com.taniniya.webtoapp.WebAssets;
 
 import java.io.ByteArrayOutputStream;
@@ -73,6 +74,45 @@ public class CoreTest {
                 WebAssets.toPackageSegment("タニシ・サバイバー")));
         check("パッケージ名生成(英数)", "mygame2".equals(WebAssets.toPackageSegment("My Game 2")));
         check("パッケージ名(先頭数字)", "a123".equals(WebAssets.toPackageSegment("123")));
+
+        // --- APK 保存先フォルダ名 (v2.2) ---
+        check("保存先 既定", "WebToApp".equals(WebAssets.normalizeFolder("WebToApp")));
+        check("保存先 空欄→Download 直下", "".equals(WebAssets.normalizeFolder("   ")));
+        check("保存先 前後のスラッシュ", "MyApps".equals(WebAssets.normalizeFolder("/MyApps/")));
+        check("保存先 2階層", "MyApps/Games".equals(WebAssets.normalizeFolder("MyApps/Games")));
+        check("保存先 .. は無視", "etc".equals(WebAssets.normalizeFolder("../etc")));
+        check("保存先 禁止文字", "My Apps_ 2026".equals(WebAssets.normalizeFolder("My Apps: 2026")));
+        check("保存先 3階層まで", "a/b/c".equals(WebAssets.normalizeFolder("a/b/c/d")));
+        check("保存先 日本語も可", "アプリ".equals(WebAssets.normalizeFolder("アプリ")));
+
+        // --- オフライン化 (SiteDownloader) の純ロジック ---
+        check("URL スキーム補完", "https://example.com".equals(
+                SiteDownloader.normalizeUrl("example.com")));
+        check("相対URLの解決", "https://example.com/a/b.css".equals(
+                SiteDownloader.absolutize("b.css", "https://example.com/a/index.html")));
+        check("ルート相対URLの解決", "https://example.com/x/y.png".equals(
+                SiteDownloader.absolutize("/x/y.png", "https://example.com/a/index.html")));
+        check("プロトコル相対URL", "https://cdn.example.com/a.js".equals(
+                SiteDownloader.absolutize("//cdn.example.com/a.js", "https://example.com/")));
+        check("javascript: は解決しない",
+                SiteDownloader.absolutize("javascript:void(0)", "https://example.com/") == null);
+        check("asset パスは構造を保つ", "r/example.com/css/style.css".equals(
+                SiteDownloader.assetPathFor("https://example.com/css/style.css")));
+        check("ディレクトリURLは index.html", "r/example.com/a/index.html".equals(
+                SiteDownloader.assetPathFor("https://example.com/a/")));
+        check("クエリ付きはハッシュを付ける",
+                SiteDownloader.assetPathFor("https://example.com/a.css?v=1").startsWith("r/example.com/a-"));
+        check("relPath 兄弟フォルダ", "../img/bg.png".equals(
+                SiteDownloader.relPath("r/h/css/style.css", "r/h/img/bg.png")));
+        check("relPath ルートから", "r/h/css/style.css".equals(
+                SiteDownloader.relPath("index.html", "r/h/css/style.css")));
+        check("charset 検出 (header)", "EUC-JP".equals(
+                SiteDownloader.detectCharset(new byte[]{1, 2, 3}, "text/html; charset=EUC-JP")));
+        check("charset 検出 (meta)", "Shift_JIS".equals(SiteDownloader.detectCharset(
+                "<html><head><meta charset=\"Shift_JIS\"></head></html>".getBytes(StandardCharsets.UTF_8),
+                "text/html")));
+        check("charset 既定は UTF-8", "UTF-8".equals(
+                SiteDownloader.detectCharset(new byte[]{1}, "text/html")));
 
         System.out.println("\nresult: " + passed + " passed, " + failed + " failed");
         if (failed > 0) System.exit(1);
