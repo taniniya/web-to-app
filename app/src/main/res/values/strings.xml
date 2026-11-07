@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WebToApp Studio</string>
-    <string name="generator_title">🚀 APK ジェネレーター</string>
-    <string name="generator_subtitle">WebサイトのURL、または手元のHTML / CSS / JS から、単独で動くAndroidアプリ (APK) をその場で生成します</string>
+    <string name="generator_title">web to apk</string>
+    <string name="generator_subtitle">WebサイトのURL、またはHTML / CSS / JS ファイルからAndroidアプリをその場で生成します</string>
 
     <!-- モード -->
-    <string name="label_mode">つくるアプリの種類</string>
-    <string name="mode_url">🌐 Webサイト (URL)</string>
-    <string name="mode_file">📁 ローカルファイル</string>
+    <string name="label_mode">生成手段</string>
+    <string name="mode_url">Webサイト (URL)</string>
+    <string name="mode_file">ローカルファイル</string>
 
     <!-- URL モード -->
     <string name="hint_url">Webサイトのアドレス (URL)</string>
     <string name="hint_url_helper">例: example.com ／ https:// は自動で補います</string>
-    <string name="paste">📋 貼り付け</string>
+    <string name="paste">📋</string>
     <string name="error_url_required">URLを入力してください</string>
 
     <!-- ファイルモード -->
-    <string name="pick_files">📁 HTML / CSS / JS / ZIP を選択</string>
+    <string name="pick_files">HTML / CSS / JS / ZIP を選択</string>
     <string name="no_files_selected">まだファイルが選ばれていません</string>
     <string name="file_mode_note">index.html を起点に、選んだファイルを全部アプリに同梱します（ZIPは自動で展開）。ネット接続なしで動きます。</string>
     <string name="error_files_required">HTMLファイルを選んでください</string>
@@ -51,7 +51,7 @@
     <string name="advanced_note">※最小対応バージョンを下げると、より古い端末でインストールできます。ターゲットバージョンは新しいほど最新のAndroidの振る舞いになります。</string>
 
     <string-array name="min_sdk_labels">
-        <item>Android 5.0 (API 21) 推奨・いちばん広く動く</item>
+        <item>Android 5.0 (API 21) 推奨</item>
         <item>Android 7.0 (API 24)</item>
         <item>Android 8.0 (API 26)</item>
         <item>Android 10 (API 29)</item>
@@ -72,10 +72,10 @@
     </string-array>
 
     <!-- ビルド -->
-    <string name="build_button">🚀 APKをビルドして書き出す</string>
+    <string name="build_button">APKをビルドして書き出す</string>
     <string name="build_note">生成したAPKは署名済みです。完了後、そのままインストールできます</string>
     <string name="building">ビルド中…</string>
-    <string name="build_done">✅ ビルド完了</string>
+    <string name="build_done">✅ビルド完了</string>
     <string name="build_done_body">APK を生成しました (%1$s)</string>
     <string name="build_done_path">保存先: %1$s</string>
     <string name="build_failed">ビルドに失敗しました</string>
