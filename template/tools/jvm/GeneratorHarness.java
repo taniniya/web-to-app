@@ -104,6 +104,42 @@ public class GeneratorHarness {
             System.out.println("C: edge-min34.apk -> " + apk.length + " bytes");
         }
 
+        // ---------- ケース D: アイコン差し替え ----------
+        Map<Integer, byte[]> icons = new LinkedHashMap<>();
+        Path iconDir = outDir.resolve("icons");
+        Files.createDirectories(iconDir);
+        int[] sizes = {48, 72, 96, 144, 192};
+        for (int px : sizes) {
+            java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(
+                    px, px, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+            java.awt.Graphics2D g = img.createGraphics();
+            g.setColor(new java.awt.Color(220, 60, 40));
+            g.fillRect(0, 0, px, px);
+            g.setColor(java.awt.Color.WHITE);
+            g.fillOval(px / 4, px / 4, px / 2, px / 2);
+            g.dispose();
+            java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+            javax.imageio.ImageIO.write(img, "png", bos);
+            byte[] png = bos.toByteArray();
+            icons.put(px, png);
+            Files.write(iconDir.resolve(px + ".png"), png);
+        }
+
+        ApkCore.Spec d = new ApkCore.Spec();
+        d.templateApk = template;
+        d.url = "https://example.com/";
+        d.appName = "アイコン付き";
+        d.packageName = "com.webtoapp.withicon";
+        d.icons = icons;
+        d.minSdk = 21;
+        d.targetSdk = 34;
+        try (InputStream ks = new FileInputStream(keystore.toFile())) {
+            d.keystore = ks;
+            byte[] apk = ApkCore.build(d, step -> System.out.println("  [D] " + step));
+            Files.write(outDir.resolve("icon.apk"), apk);
+            System.out.println("D: icon.apk -> " + apk.length + " bytes");
+        }
+
         System.out.println("done");
     }
 }

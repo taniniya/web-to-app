@@ -84,6 +84,13 @@ public final class ApkCore {
         public char[] keystorePassword = "android".toCharArray();
         public String keyAlias = "androiddebugkey";
         public char[] keyPassword = "android".toCharArray();
+
+        /**
+         * 署名時に使う一時ファイルの置き場。
+         * Android では java.io.tmpdir が書けない端末があるため、呼び出し側が
+         * アプリのキャッシュ領域を渡す。null なら java.io.tmpdir。
+         */
+        public File tempDir;
     }
 
     private static final String[][] ICON_DIRS = {
@@ -264,8 +271,8 @@ public final class ApkCore {
 
         ApkSigner.SignerConfig signerConfig = new ApkSigner.SignerConfig.Builder(
                 "webtoapp", privateKey, Collections.singletonList((X509Certificate) cert)).build();
-        File in = File.createTempFile("w2a-unsigned", ".apk");
-        File out = File.createTempFile("w2a-signed", ".apk");
+        File in = File.createTempFile("w2a-unsigned", ".apk", spec.tempDir);
+        File out = File.createTempFile("w2a-signed", ".apk", spec.tempDir);
         try {
             try (FileOutputStream fos = new FileOutputStream(in)) {
                 fos.write(unsigned);

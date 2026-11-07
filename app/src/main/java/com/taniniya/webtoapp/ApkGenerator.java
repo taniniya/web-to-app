@@ -101,6 +101,8 @@ public final class ApkGenerator {
         spec.keystorePassword = "android".toCharArray();
         spec.keyAlias = "androiddebugkey";
         spec.keyPassword = "android".toCharArray();
+        // 端末によっては java.io.tmpdir が書けないので、アプリのキャッシュを使う
+        spec.tempDir = ctx.getCacheDir();
 
         byte[] signed = ApkCore.build(spec, progress);
 
